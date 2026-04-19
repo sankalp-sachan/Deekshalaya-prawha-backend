@@ -3,14 +3,26 @@ const { Readable } = require('stream');
 
 let gridfsBucket;
 const conn = mongoose.connection;
-conn.once('open', () => {
-    gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, {
-        bucketName: 'images'
-    });
-});
+const initBucket = () => {
+    if (conn.db) {
+        gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, {
+            bucketName: 'images'
+        });
+    }
+};
+
+if (conn.readyState === 1) {
+    initBucket();
+} else {
+    conn.once('open', initBucket);
+}
 
 exports.uploadImages = async (req, res) => {
     try {
+        if (!gridfsBucket) {
+            initBucket();
+            if (!gridfsBucket) return res.status(500).send('Database connection not ready for uploads');
+        }
         if (!req.files || req.files.length === 0) return res.status(400).send('No files uploaded');
         
         const uploadPromises = req.files.map(file => {
