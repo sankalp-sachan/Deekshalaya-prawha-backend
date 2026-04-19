@@ -23,7 +23,11 @@ exports.uploadImages = async (req, res) => {
             initBucket();
             if (!gridfsBucket) return res.status(500).send('Database connection not ready for uploads');
         }
-        if (!req.files || req.files.length === 0) return res.status(400).send('No files uploaded');
+        if (!req.files || req.files.length === 0) {
+            console.log('No files in request');
+            return res.status(400).send('No files uploaded');
+        }
+        console.log(`Received ${req.files.length} files for upload`);
         
         const uploadPromises = req.files.map(file => {
             return new Promise((resolve, reject) => {
@@ -62,7 +66,10 @@ exports.streamImage = async (req, res) => {
         
         // Find metadata for content type
         const files = await gridfsBucket.find({ _id: fileId }).toArray();
-        if (!files || files.length === 0) return res.status(404).send('Not found');
+        if (!files || files.length === 0) {
+            console.log(`File not found in GridFS: ${fileId}`);
+            return res.status(404).send('Not found');
+        }
 
         res.set('Content-Type', files[0].contentType || 'image/jpeg');
         downloadStream.pipe(res);
