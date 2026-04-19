@@ -3,11 +3,11 @@ const slugify = require('slugify');
 
 exports.createNews = async (req, res) => {
     try {
-        const { title, content, category, tags, image, isBreaking } = req.body;
+        const { title, content, category, tags, images, isBreaking } = req.body;
         const slug = slugify(title, { lower: true, strict: true });
         
         const news = new News({
-            title, content, category, tags, image, isBreaking, slug,
+            title, content, category, tags, images, isBreaking, slug,
             author: req.user.id
         });
 
@@ -92,11 +92,11 @@ exports.getOneNews = async (req, res) => {
 
 exports.updateNews = async (req, res) => {
     try {
-        const { title, content, category, tags, image, isBreaking } = req.body;
+        const { title, content, category, tags, images, isBreaking } = req.body;
         const slug = slugify(title, { lower: true, strict: true });
         
         const news = await News.findByIdAndUpdate(req.params.id, 
-            { title, content, category, tags, image, isBreaking, slug },
+            { title, content, category, tags, images, isBreaking, slug },
             { new: true }
         );
         res.json(news);

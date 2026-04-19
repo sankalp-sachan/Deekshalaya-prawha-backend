@@ -39,6 +39,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/news', require('./routes/news'));
 app.use('/api/epaper', require('./routes/epaper'));
 app.use('/api/comment', require('./routes/comment'));
+app.use('/api/upload', require('./routes/upload'));
 
 // Health check
 app.get('/', (req, res) => res.send('News Portal API Running...'));

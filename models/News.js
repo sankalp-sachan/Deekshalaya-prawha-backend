@@ -7,7 +7,7 @@ const newsSchema = new mongoose.Schema({
     category: { type: String, required: true },
     tags: [String],
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    image: String,
+    images: [String],
     views: { type: Number, default: 0 },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     summary: String,
