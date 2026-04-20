@@ -10,7 +10,7 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
 });
 
-router.post('/', auth, authorize('Admin'), upload.array('images', 5), uploadImages);
+router.post('/', auth, authorize('Admin', 'Journalist'), upload.array('images', 5), uploadImages);
 router.get('/stream/:fileId', streamImage);
 
 module.exports = router;
