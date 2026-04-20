@@ -110,6 +110,17 @@ exports.updateNews = async (req, res) => {
     }
 };
 
+exports.getNewsById = async (req, res) => {
+    try {
+        const news = await News.findById(req.params.id).populate('author', 'name');
+        if (!news) return res.status(404).send('News not found');
+        res.json(news);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+};
+
 exports.deleteNews = async (req, res) => {
     try {
         await News.findByIdAndDelete(req.params.id);
