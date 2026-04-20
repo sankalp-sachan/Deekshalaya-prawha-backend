@@ -4,7 +4,9 @@ const slugify = require('slugify');
 exports.createNews = async (req, res) => {
     try {
         const { title, content, category, tags, images, isBreaking } = req.body;
-        const slug = slugify(title, { lower: true, strict: true });
+        // Improved slug generation for multilingual support
+        let slug = slugify(title, { lower: true, remove: /[*+~.()'"!:@]/g });
+        if (!slug) slug = Date.now().toString(); // Fallback if slugify fails to produce anything
         
         const news = new News({
             title, content, category, tags, images, isBreaking, slug,
@@ -93,7 +95,9 @@ exports.getOneNews = async (req, res) => {
 exports.updateNews = async (req, res) => {
     try {
         const { title, content, category, tags, images, isBreaking } = req.body;
-        const slug = slugify(title, { lower: true, strict: true });
+        // Improved slug generation for multilingual support
+        let slug = slugify(title, { lower: true, remove: /[*+~.()'"!:@]/g });
+        if (!slug) slug = Date.now().toString(); // Fallback if slugify fails to produce anything
         
         const news = await News.findByIdAndUpdate(req.params.id, 
             { title, content, category, tags, images, isBreaking, slug },
