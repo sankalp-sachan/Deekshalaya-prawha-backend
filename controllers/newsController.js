@@ -146,7 +146,7 @@ exports.likeNews = async (req, res) => {
         const news = await News.findById(req.params.id);
         if (!news) return res.status(404).send('News not found');
 
-        const index = news.likes.indexOf(req.user.id);
+        const index = news.likes.findIndex(likeId => likeId.toString() === req.user.id);
         if (req.user.id && index === -1) {
             news.likes.push(req.user.id);
         } else if (req.user.id) {
