@@ -78,3 +78,27 @@ exports.streamEpaper = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+exports.deleteEpaper = async (req, res) => {
+    try {
+        const epaper = await Epaper.findById(req.params.id);
+        if (!epaper) {
+            return res.status(404).json({ msg: 'E-paper not found' });
+        }
+
+        // Delete from GridFS
+        if (epaper.fileId) {
+            try {
+                await gridfsBucket.delete(new mongoose.Types.ObjectId(epaper.fileId));
+            } catch (err) {
+                console.error('Error deleting file from GridFS:', err);
+                // Continue even if file deletion fails (it might already be gone)
+            }
+        }
+
+        await Epaper.findByIdAndDelete(req.params.id);
+        res.json({ msg: 'E-paper deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+};
