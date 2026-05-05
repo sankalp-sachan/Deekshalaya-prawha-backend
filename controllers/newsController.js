@@ -179,11 +179,14 @@ exports.getNewsShare = async (req, res) => {
 
         res.send(`
             <!DOCTYPE html>
-            <html lang="en">
+            <html lang="en" prefix="og: http://ogp.me/ns#">
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>${news.title}</title>
+                
+                <!-- Core Meta Tags -->
+                <meta name="description" content="${news.summary || 'दीक्षालय प्रवाह - बहुभाषी दैनिक समाचार पत्र'}">
                 
                 <!-- Open Graph / Facebook -->
                 <meta property="og:type" content="article">
@@ -191,6 +194,11 @@ exports.getNewsShare = async (req, res) => {
                 <meta property="og:title" content="${news.title}">
                 <meta property="og:description" content="${news.summary || 'दीक्षालय प्रवाह - बहुभाषी दैनिक समाचार पत्र'}">
                 <meta property="og:image" content="${imageUrl}">
+                <meta property="og:image:secure_url" content="${imageUrl}">
+                <meta property="og:image:type" content="image/jpeg">
+                <meta property="og:image:width" content="1200">
+                <meta property="og:image:height" content="630">
+                <meta property="og:site_name" content="दीक्षालय प्रवाह">
 
                 <!-- Twitter -->
                 <meta property="twitter:card" content="summary_large_image">
@@ -199,13 +207,23 @@ exports.getNewsShare = async (req, res) => {
                 <meta property="twitter:description" content="${news.summary || 'दीक्षालय प्रवाह - बहुभाषी दैनिक समाचार पत्र'}">
                 <meta property="twitter:image" content="${imageUrl}">
 
+                <!-- Prerender/Scraper optimization -->
+                <meta name="robots" content="index, follow">
+                
                 <meta http-equiv="refresh" content="0;url=${redirectUrl}">
             </head>
-            <body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f8fafc;">
-                <div style="text-align: center;">
-                    <h1 style="color: #0f172a;">Redirecting...</h1>
-                    <p style="color: #64748b;">If you are not redirected automatically, <a href="${redirectUrl}" style="color: #0284c7; text-decoration: none; font-weight: bold;">click here</a>.</p>
+            <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f8fafc;">
+                <div style="text-align: center; max-width: 400px; padding: 20px;">
+                    <div style="margin-bottom: 20px; color: #0284c7;">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 2s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+                    </div>
+                    <h1 style="color: #0f172a; font-size: 1.5rem; margin-bottom: 10px;">Redirecting to News</h1>
+                    <p style="color: #64748b; line-height: 1.5;">We are taking you to the article: <br><strong>${news.title}</strong></p>
+                    <p style="margin-top: 30px;"><a href="${redirectUrl}" style="color: #fff; background: #0284c7; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: bold; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">Click here if not redirected</a></p>
                 </div>
+                <style>
+                    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+                </style>
                 <script>window.location.href = "${redirectUrl}";</script>
             </body>
             </html>
