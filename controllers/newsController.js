@@ -159,3 +159,59 @@ exports.likeNews = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+exports.getNewsShare = async (req, res) => {
+    try {
+        const news = await News.findOne({ slug: req.params.slug });
+        if (!news) return res.status(404).send('News not found');
+
+        const backendUrl = process.env.BACKEND_URL || 'https://deekshalaya-prawha-backend.onrender.com';
+        const getImageUrl = (img) => {
+            if (!img) return 'https://images.unsplash.com/photo-1504711432869-efd597cdd042?auto=format&fit=crop&q=80&w=1600';
+            return img.startsWith('http') ? img : `${backendUrl}${img}`;
+        };
+
+        const imageUrl = getImageUrl(news.images?.[0]);
+        // The URL of your React frontend. 
+        // In production, set FRONTEND_URL in your environment variables.
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000'; 
+        const redirectUrl = `${frontendUrl}/news/${news.slug}`;
+
+        res.send(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>${news.title}</title>
+                
+                <!-- Open Graph / Facebook -->
+                <meta property="og:type" content="article">
+                <meta property="og:url" content="${redirectUrl}">
+                <meta property="og:title" content="${news.title}">
+                <meta property="og:description" content="${news.summary || 'दीक्षालय प्रवाह - बहुभाषी दैनिक समाचार पत्र'}">
+                <meta property="og:image" content="${imageUrl}">
+
+                <!-- Twitter -->
+                <meta property="twitter:card" content="summary_large_image">
+                <meta property="twitter:url" content="${redirectUrl}">
+                <meta property="twitter:title" content="${news.title}">
+                <meta property="twitter:description" content="${news.summary || 'दीक्षालय प्रवाह - बहुभाषी दैनिक समाचार पत्र'}">
+                <meta property="twitter:image" content="${imageUrl}">
+
+                <meta http-equiv="refresh" content="0;url=${redirectUrl}">
+            </head>
+            <body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f8fafc;">
+                <div style="text-align: center;">
+                    <h1 style="color: #0f172a;">Redirecting...</h1>
+                    <p style="color: #64748b;">If you are not redirected automatically, <a href="${redirectUrl}" style="color: #0284c7; text-decoration: none; font-weight: bold;">click here</a>.</p>
+                </div>
+                <script>window.location.href = "${redirectUrl}";</script>
+            </body>
+            </html>
+        `);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+};
